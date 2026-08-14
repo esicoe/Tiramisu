@@ -1,0 +1,51 @@
+{
+  "Name": "aim1k tablet",
+  "DigitizerIdentifiers": [
+    {
+      "VendorID": 4617,
+      "ProductID": 1,
+      "InputReportLength": 8,
+      "OutputReportLength": 0,
+      "ReportParser": "OpenTabletDriver.Plugin.Tablet.TabletReportParser",
+      "FeatureInitReport": [[3, 0]],
+      "DeviceStrings": {},
+      "InitializationStrings": []
+    }
+  ],
+  "AuxilaryDeviceIdentifiers": [],
+  "Specifications": {
+    "Digitizer": {
+      "Width": 110.0,
+      "Height": 90.0,
+      "MaxX": 11000.0,
+      "MaxY": 9000.0
+    },
+    "Pen": {
+      "MaxPressure": 4095,
+      "Buttons": {
+        "ButtonCount": 0
+      }
+    }
+  },
+  "Attributes": {},
+  "_comment": [
+    "NO PLUGIN DLL REQUIRED. The firmware's report layout is byte-for-byte what",
+    "OTD's built-in TabletReportParser expects: [0] report id, [1] buttons,",
+    "[2:4] X u16 LE, [4:6] Y u16 LE, [6:8] pressure u16 LE. The in-range flag is",
+    "deliberately on bit 0 of byte 1, because that parser reads bits 1 and 2 as",
+    "the pen buttons - putting in-range on bit 1 would look like a button held",
+    "down the whole time the pen is over the tablet.",
+    "",
+    "VendorID 4617 = 0x1209, ProductID 1 = 0x0001 (pid.codes prototype).",
+    "InputReportLength 8 selects the VENDOR collection; the absolute-mouse",
+    "collection on the same interface is 6 bytes and Windows owns it.",
+    "",
+    "FeatureInitReport [[3, 0]] is report ID 3 (REPORT_ID_MODE) with payload 0,",
+    "which switches the tablet's absolute-mouse collection OFF when OTD takes",
+    "over. Without it the tablet keeps moving the cursor by itself and fights",
+    "OTD for the pointer. Unplugging and replugging restores mouse mode, so the",
+    "tablet still works driverless on any other machine.",
+    "",
+    "Coordinates are in 0.01 mm: MaxX 11000 over Width 110 mm."
+  ]
+}

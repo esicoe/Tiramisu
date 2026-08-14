@@ -1,0 +1,21 @@
+__pycache__/
+*.pyc
+
+# KiCad backups / autosave / lock files
+*-backups/
+*.kicad_prl
+_autosave-*
+~*.lck
+fp-info-cache
+
+# VS Code Local History extension
+.history/
+
+# KiCad history
+*-backups/
+*.kicad_pcb-bak
+*.kicad_sch-bak
+*.bak
+*~
+*-bak.png
+*-bak.pdf
