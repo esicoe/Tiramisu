@@ -25,7 +25,9 @@ tiramisu-dev/                the current board revision
 | Report rate | **1000 Hz** (999.8 Hz measured, 2 gaps in 15,000) |
 | Grid scan rate | ~1610 Hz, 120 sensors, DMA on core 1 |
 | Sensor noise | σ ≈ 5.8 ADC counts |
-| Signal, magnet on the surface | ~2066 counts — **suspected ADC rail, not a working-height figure** (see below) |
+| Per-sensor offset spread | 1935–2106 counts with no field (~30σ) — why baselines are per-sensor |
+| Signal, magnet in a pen at ~10 mm | **~406 counts (≈70σ)**, coherence 0.48 |
+| Signal, magnet flat on the surface | ~936 counts — **HAL403 compressing, not a linear reading** |
 | Localisation | weighted centroid seeded into a Levenberg-Marquardt dipole fit |
 | Sensor map | verified against hardware (magnet on U88 → col 5 row 4, x 50.86 y 39.58 mm) |
 | Windows Ink | not in the path — the device is not a Digitizer/Pen |
@@ -33,21 +35,26 @@ tiramisu-dev/                the current board revision
 
 Open items:
 
-- **Re-measure at a real working height.** Every figure above was taken by sliding a bare
-  6 ⌀ × 10 mm magnet directly on the tablet surface, not with a pen. At that distance
-  `tiramisu-dev/docs/CALCULATIONS.md` §4 gives **~343 mT** — far outside any linear Hall's
-  range — and 4095 − 2048 = 2047, which "~2066 counts" sits suspiciously close to. Confirm
-  with `r` on the debug console: peak cells reading 4095, or flat across several cells,
-  means the front end was clipped for the whole of bring-up. A printed jig with magnet
-  pockets at fixed heights gives repeatable hover *and* fixed orientation; fingers give
-  neither.
-- **Working height reads ~14 mm where §4 wants 8–12 mm** — possibly the same artifact
-  rather than a geometry problem. A saturated peak is flat-topped, the dipole model has no
-  flat tops, and the only parameter that can explain a plateau is height, so a clipped blob
-  gets reported as a magnet further away than it is. Re-check once the signal is in range.
-- **Expect ~90σ, not 356σ.** A genuine 10 mm hover puts the 6 ⌀ × 10 magnet at ~21 mT.
-  Still well clear of the 8σ acquire threshold, but roughly a quarter of the headroom the
-  table above implies.
+- **The HAL403 saturates before the ADC does.** Measured 2026-09-03. Magnet flat on the
+  surface: peak 936 counts, raw maximum 2930 against a 4095 full scale — **1165 counts of
+  ADC headroom, so nothing is clipping digitally.** But `tiramisu-dev/docs/CALCULATIONS.md`
+  §4 puts the field at that distance near 274 mT against ~20.5 mT for a pen at ~10 mm: a
+  **13×** ratio, against a **measured 2.3×** (936 → 406). The near reading is compressed
+  roughly 5×. Working back from the far point, sensitivity is **~20 counts/mT** and the
+  sensor gives up near **~47 mT**, i.e. any magnet face closer than ~7 mm. §4's 8–12 mm
+  window sits just outside that — now a measured reason, not just a geometric one.
+- **The earlier "~2066 counts / 356σ" figure is withdrawn.** It did not reproduce, and does
+  not correspond to anything a 6 ⌀ × 10 magnet produces on this grid. Use the table above.
+- **The dipole-centre offset is real and visible in the data.** At a magnet face of ~10 mm
+  the measured coherence is 0.48, which `config.h`'s table maps to z ≈ 16 mm — about L/2
+  further out than the face, exactly as a point-dipole fit to a 10 mm cylinder should read.
+  This is why the console's `z` runs high, and why "working height ~14 mm" was comparing a
+  fitted dipole-centre height against §4's face-distance table. Not a geometry fault.
+- **Still needed: a controlled hover sweep.** Both readings above had the magnet between
+  cells and hand-held, and `config.h` notes the peak swings 2–3× with lateral position
+  alone. Directionally solid, quantitatively rough. A printed jig with pockets at
+  4/6/8/10/12/14 mm, magnet parked over one sensor, turns all of this into measurement and
+  decides the production magnet.
 - Tip switch is unwired (hover-only, click with the keyboard as osu! players normally do).
 
 ## Setting up on a new machine
