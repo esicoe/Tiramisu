@@ -2,7 +2,6 @@
 
 <p align="center">
   <img src="images/dev-board-render.png" width="49%" alt="KiCad render of the aim1k dev board">
-  <img src="images/dev-board-photo.jpg" width="49%" alt="The assembled aim1k dev board">
 </p>
 
 Tiramisu is a drawing tablet for [osu!](https://osu.ppy.sh) that tracks a magnet-tipped pen with a grid of
